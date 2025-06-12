@@ -1,4 +1,5 @@
 using System;
+using Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -32,18 +33,30 @@ public enum FAnimal
 
 public class Figure : MonoBehaviour
 {
-    private FigureForm figureForm;
+    public FigureForm FForm { get; set; }
     private PolygonCollider2D polygonCollider;
 
     public void Initialize(FForm form, FColor color, FAnimal animal)
     {
-        figureForm = GetComponent<FigureForm>();
+        FForm = GetComponent<FigureForm>();
         
-        figureForm.Form = form;
-        figureForm.Color = color;
-        figureForm.Animal = animal;
+        FForm.Form = form;
+        FForm.Color = color;
+        FForm.Animal = animal;
         
-        figureForm.Initilize();
+        FForm.Initilize();
         polygonCollider = gameObject.AddComponent<PolygonCollider2D>();
+    }
+
+    private void OnMouseDown()
+    {
+        ActionBar.Instance.AddFigure(this);
+        Destroy(gameObject);
+    }
+
+    public void DisableInteractions()
+    {
+        polygonCollider.enabled = false;
+        GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,13 +14,14 @@ public class FigureSpawner : MonoBehaviour
     private int amount;
     
     [SerializeField]
-    private float positionOffset;
+    private float positionOffset, spawnDelay;
 
     private (FForm form, FColor color, FAnimal animal)[] figureAttributes;
 
     private void Start()
     {
         figureAttributes = CreateBalancedAttributes();
+        GameManager.Instance.FiguresCount = amount;
         StartCoroutine(Spawn());
     }
 
@@ -27,14 +29,15 @@ public class FigureSpawner : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            var figure = Instantiate(figurePrefab);
-            figure.GetComponent<Figure>().Initialize(
+            var figureGo = Instantiate(figurePrefab);
+            var figure = figureGo.GetComponent<Figure>();
+            figure.Initialize(
                 figureAttributes[i].form,
                 figureAttributes[i].color,
                 figureAttributes[i].animal
             );
             figure.transform.position = GetRandomPosition();
-            yield return new WaitForSeconds(.15f);
+            yield return new WaitForSeconds(spawnDelay);
         }
     }
     
