@@ -1,4 +1,5 @@
 using System;
+using Figures;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,12 +34,24 @@ public class Figure : MonoBehaviour
 {
     public FigureForm FForm { get; set; }
     private PolygonCollider2D polygonCollider;
+    private Rigidbody2D rigidbody;
+    
     private Camera mainCamera;
     private bool wasPressed;
+    public bool CanBePressed { get; set; } = true;
+
+    private IFigureSkill skill;
+
+    public IFigureSkill Skill
+    {
+        get => skill;
+        set => skill = value;
+    }
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     public void Initialize(FForm form, FColor color, FAnimal animal)
@@ -83,7 +96,7 @@ public class Figure : MonoBehaviour
         Vector2 worldPoint = mainCamera.ScreenToWorldPoint(screenPosition);
         RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
 
-        if (hit.collider && hit.collider.gameObject == gameObject)
+        if (CanBePressed && hit.collider && hit.collider.gameObject == gameObject)
         {
             ActionBar.Instance.AddFigure(this);
             Destroy(gameObject);
@@ -92,16 +105,12 @@ public class Figure : MonoBehaviour
 
     public void DisableInteractions()
     {
-        if (polygonCollider != null)
-            polygonCollider.enabled = false;
-            
-        var rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-            rb.bodyType = RigidbodyType2D.Static;
+        polygonCollider.enabled = false;
+        rigidbody.bodyType = RigidbodyType2D.Static;
     }
-
-    public bool CheckInteractions()
+    
+    public void SetMass(float mass)
     {
-        return polygonCollider != null && polygonCollider.enabled;
+        rigidbody.mass = mass;
     }
 }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Figures;
+using Figures.Skills;
 using Managers;
 using UnityEngine;
 
@@ -59,7 +61,29 @@ public class ActionBar : MonoBehaviour
                last.Animal == second.Animal && second.Animal == third.Animal;
     }
 
-    private void RemoveLastThree()
+private bool HasBombInLastThree()
+{
+    for (int i = 1; i <= 3; i++)
+    {
+        if (figurePositions[currentIndex - i].GetChild(0).GetComponent<Bomb>())
+            return true;
+    }
+    return false;
+}
+
+private void RemoveLastThree()
+{
+    if (HasBombInLastThree())
+    {
+        while (Figures.Count > 0)
+        {
+            Destroy(figurePositions[currentIndex - 1].GetChild(0).gameObject);
+            Figures.RemoveAt(Figures.Count - 1);
+            GameManager.Instance.FiguresCount--;
+            currentIndex--;
+        }
+    }
+    else
     {
         for (int i = 0; i < 3; i++)
         {
@@ -69,6 +93,12 @@ public class ActionBar : MonoBehaviour
             currentIndex--;
         }
     }
+
+    foreach (var figure in FigureSpawner.Instance.SpawnedFigures)
+    {
+        figure.Skill?.Use();
+    }
+}
 
     public void Clear()
     {
