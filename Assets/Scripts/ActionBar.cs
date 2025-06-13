@@ -21,7 +21,6 @@ public class ActionBar : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
     
     public void AddFigure(Figure figure)
@@ -69,6 +68,20 @@ public class ActionBar : MonoBehaviour
             GameManager.Instance.FiguresCount--;
             currentIndex--;
         }
+    }
+
+    public void Clear()
+    {
+        foreach (var figure in figurePositions)
+        {
+            if (figure.childCount > 0)  // Проверяем наличие дочерних объектов
+            {
+                Destroy(figure.GetChild(0).gameObject);
+            }
+        }
+        
+        Figures.Clear();
+        currentIndex = 0;
     }
 
     private void OnDestroy()

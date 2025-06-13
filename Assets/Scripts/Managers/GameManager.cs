@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -17,22 +18,43 @@ namespace Managers
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         public void Win()
         {
-            Debug.Log("ПОБЕДА");
+            UIManager.Instance.ShowWinScreen();
+            HideGameField();
         }
         
         public void Lose()
         {
-            Debug.Log("ПРОИГРЫШ");
+            UIManager.Instance.ShowLoseScreen();
+            HideGameField();
+        }
+
+        private void HideGameField()
+        {
+            GameField.Instance.gameObject.SetActive(false);
         }
 
         public void Reset()
         {
+            var figures = FindObjectsByType<Figure>(FindObjectsSortMode.None);
             
+            foreach (var figure in figures)
+            {
+                Destroy(figure.gameObject);
+            }
+            
+            ActionBar.Instance.Clear();
+            var amount = figures.Length;
+            
+            FigureSpawner.Instance.Respawn(amount);
+        }
+        
+        public void RestartGame()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         
         private void OnDestroy()

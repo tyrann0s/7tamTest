@@ -59,4 +59,9 @@ public class Figure : MonoBehaviour
         polygonCollider.enabled = false;
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
     }
+
+    public bool CheckInteractions()
+    {
+        return polygonCollider;
+    }
 }
